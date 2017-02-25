@@ -33,27 +33,3 @@ function generateBasicTrussGeometry(truss) {
     trussGeometry.computeVertexNormals();
     return trussGeometry;
 }
-
-function generateTestTrussGeometry(truss) {
-    var widthDelta = truss.dimensions.width / 2;
-    var thicknessDelta = truss.dimensions.thickness / 2;
-    var trussGeometry = new THREE.Geometry();
-
-    // front face
-    trussGeometry.vertices.push(
-        new THREE.Vector3(widthDelta, 0, thicknessDelta),
-        new THREE.Vector3(-widthDelta, 0, thicknessDelta),
-        new THREE.Vector3(0, truss.dimensions.height, thicknessDelta)
-    );
-    trussGeometry.faces.push(new THREE.Face3(0,2,1));
-    // back face
-    trussGeometry.vertices.push(
-        new THREE.Vector3(widthDelta, 0, -thicknessDelta),
-        new THREE.Vector3(-widthDelta, 0, -thicknessDelta),
-        new THREE.Vector3(0, truss.dimensions.height, -thicknessDelta)
-    );
-    trussGeometry.faces.push(new THREE.Face3(3,4,5));
-    trussGeometry.computeFaceNormals();
-    trussGeometry.computeVertexNormals();
-    return trussGeometry;
-}

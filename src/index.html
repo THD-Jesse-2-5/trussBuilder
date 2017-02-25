@@ -14,16 +14,16 @@
 <body>
     <canvas id="myCanvas"></canvas>
 
-    <script src="http://threejs.org/build/three.min.js"></script>
+    <script src="three.js"></script>
     <script src="colors.js"></script>
     <script src="trussData.js"></script>
     <script src="advTrussData.js"></script>
-    <script src="advTrussGenerator.js"></script>
+    <script src="trussUtils.js"></script>
     <script src="trussGenerator.js"></script>
     <script>
         var renderer = new THREE.WebGLRenderer({canvas: document.getElementById('myCanvas'), antialias: true});
         // renderer
-        renderer.setClearColor(0x338833);
+        renderer.setClearColor(0x999999);
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         // camera, scene
@@ -95,13 +95,17 @@
                 requestAnimationFrame(render);
         };
         var trussMeshes = [];
-        var anchors = generateAnchors(advTrussData, colors.orange);
-        var wallSegments = generateWalls(advTrussData);
+        var anchors = generateAnchors(advTrussData.walls, colors.orange);
+        var wallSegments = generateWalls(advTrussData.walls);
+        var posts = generatePosts(advTrussData.walls);
         for(var i=0;i<anchors.length;i++) {
             scene.add(anchors[i]);
         }
         for(var i=0;i<wallSegments.length;i++) {
             scene.add(wallSegments[i]);
+        }
+        for(var i=0;i<posts.length;i++) {
+            scene.add(posts[i]);
         }
         // renderBase(trussData);
         // renderTrusses(trussData, trussMeshes);
