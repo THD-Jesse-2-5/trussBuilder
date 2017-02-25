@@ -15,7 +15,10 @@
     <canvas id="myCanvas"></canvas>
 
     <script src="http://threejs.org/build/three.min.js"></script>
+    <script src="colors.js"></script>
     <script src="trussData.js"></script>
+    <script src="advTrussData.js"></script>
+    <script src="advTrussGenerator.js"></script>
     <script src="trussGenerator.js"></script>
     <script>
         var renderer = new THREE.WebGLRenderer({canvas: document.getElementById('myCanvas'), antialias: true});
@@ -37,13 +40,17 @@
         scene.add(ambientLight);
         scene.add(pointLight1);
         scene.add(pointLight2);
-        // Base House
-        var houseBaseGeometry = new THREE.BoxGeometry(trussData.baseDimensions.width, trussData.baseDimensions.height, trussData.baseDimensions.depth);
-        var houseBaseMaterial = new THREE.MeshLambertMaterial({color: 0x999999, transparent: true, opacity: .5});
-        var houseBaseMesh = new THREE.Mesh(houseBaseGeometry, houseBaseMaterial);
-        houseBaseMesh.position.set(0, trussData.baseDimensions.height / 2,
-            trussData.baseDimensions.depth / 2);
-        scene.add(houseBaseMesh);
+
+        function renderBase(trussData) {
+            // Base House
+            var houseBaseGeometry = new THREE.BoxGeometry(trussData.baseDimensions.width, trussData.baseDimensions.height, trussData.baseDimensions.depth);
+            var houseBaseMaterial = new THREE.MeshLambertMaterial({color: 0x999999, transparent: true, opacity: .5});
+            var houseBaseMesh = new THREE.Mesh(houseBaseGeometry, houseBaseMaterial);
+            houseBaseMesh.position.set(0, trussData.baseDimensions.height / 2,
+                trussData.baseDimensions.depth / 2);
+            scene.add(houseBaseMesh);
+        }
+
 
         function renderTrusses(trussData, trussMeshes) {
             // debugger;
@@ -88,7 +95,16 @@
                 requestAnimationFrame(render);
         };
         var trussMeshes = [];
-        renderTrusses(trussData, trussMeshes);
+        var anchors = generateAnchors(advTrussData, colors.orange);
+        var wallSegments = generateWalls(advTrussData);
+        for(var i=0;i<anchors.length;i++) {
+            scene.add(anchors[i]);
+        }
+        for(var i=0;i<wallSegments.length;i++) {
+            scene.add(wallSegments[i]);
+        }
+        // renderBase(trussData);
+        // renderTrusses(trussData, trussMeshes);
         render();
     </script>
 </body>
