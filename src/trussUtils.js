@@ -76,15 +76,16 @@ function generateTrussMesh(trussData) {
     }
 }
 
-function calculateMeasurements(anchor1, anchor2) {
-    var xDistance = anchor1.x - anchor2.x;
-    var zDistance = anchor1.z - anchor2.z;
+function calculateMeasurements(anchor0, anchor1) {
+    var xDistance = anchor1.x - anchor0.x;
+    var zDistance = anchor1.z - anchor0.z;
 
-    var xCenter = (anchor1.x + anchor2.x) / 2;
-    var zCenter = (anchor1.z + anchor2.z) / 2;
+    var xCenter = (anchor1.x + anchor0.x) / 2;
+    var zCenter = (anchor1.z + anchor0.z) / 2;
 
     var xzLength = Math.sqrt(xDistance*xDistance + zDistance*zDistance);
-    var yRotation = Math.acos(xDistance / xzLength);
+    var thetaDirection = zDistance < 0 ? 1 : -1;
+    var yRotation = Math.acos(xDistance * thetaDirection / xzLength);
 
     var center = new THREE.Vector3(xCenter, anchor1.y, zCenter);
 

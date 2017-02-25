@@ -51,35 +51,41 @@
             scene.add(houseBaseMesh);
         }
 
+        function renderTrusses(trussData) {
+            var trussMeshes = [];
+            var stdTrussMaterial = new THREE.MeshLambertMaterial({color: 0x886644});
 
-        function renderTrusses(trussData, trussMeshes) {
-            // debugger;
-            trussMeshes = [];
-            var loadBearingMaterial = new THREE.MeshLambertMaterial({color: 0xff8800});
-            var standardMaterial = new THREE.MeshLambertMaterial({color: 0xffffff});
-            var defaultTruss = trussData.defaultTruss;
-
-            var totalTrussCount = trussData.trusses.length;
-            //debugger;
-            for(var i=0; i<totalTrussCount; i++) {
-                // get truss data, pulling from default if not present
+            for(var i=0; i<trussData.trusses.length; i++) {
                 var truss = trussData.trusses[i];
-                truss.dimensions = truss.dimensions || defaultTruss.dimensions;
-                truss.loadBearing = truss.loadBearing || defaultTruss.loadBearing;
-                truss.type = truss.type || defaultTruss.type;
                 var trussGeometry = generateTrussGeometry(truss);
-                var trussMaterial = truss.loadBearing ? loadBearingMaterial : standardMaterial;
+                var trussMaterial = truss.color ?
+                    new THREE.MeshLambertMaterial({color: truss.color}) :
+                    stdTrussMaterial;
                 var trussMesh = new THREE.Mesh(trussGeometry, trussMaterial);
-                trussMesh.position.set(0, trussData.baseDimensions.height, truss.position);
-                scene.add(trussMesh);
+                // take measurements for positioning
+                var anchor0 = trussData.connections[i].anchors[0];
+                var anchor1 = trussData.connections[i].anchors[1];
+                var trussMeasurements = calculateMeasurements(
+                        trussData.walls[anchor0.wall].anchors[anchor0.anchor],
+                        trussData.walls[anchor1.wall].anchors[anchor1.anchor]
+                );
+
+                trussMesh.position.set(
+                    trussMeasurements.center.x,
+                    trussMeasurements.center.y,
+                    trussMeasurements.center.z
+                );
+                trussMesh.rotation.y = trussMeasurements.rotation.y;
                 trussMeshes.push(trussMesh);
             }
+            return trussMeshes;
         }
 
         function rotateMesh(mesh, x, y) {
             mesh.rotation.x += x;
             mesh.rotation.y += y;
         }
+
         var cameraDelta = 0;
         function rotateCamera(target, delta, height, distance) {
             cameraDelta += delta;
@@ -88,27 +94,34 @@
             camera.position.z = Math.cos(cameraDelta) * distance;
             camera.position.y = height;
         }
+
         function render() {
                 //rotateMesh(houseBaseMesh, 0, 0.1);
                 rotateCamera(origin, .01, trussData.baseDimensions.height + 50, 1000);
                 renderer.render(scene, camera);
                 requestAnimationFrame(render);
         };
-        var trussMeshes = [];
-        var anchors = generateAnchors(advTrussData.walls, colors.orange);
-        var wallSegments = generateWalls(advTrussData.walls);
-        var posts = generatePosts(advTrussData.walls);
-        for(var i=0;i<anchors.length;i++) {
-            scene.add(anchors[i]);
+
+        var trusses = renderTrusses(advTrussData);
+        for(var i=0;i<trusses.length;i++) {
+            scene.add(trusses[i]);
         }
+
+        // var anchors = generateAnchors(advTrussData.walls, colors.orange);
+        // for(var i=0;i<anchors.length;i++) {
+        //     scene.add(anchors[i]);
+        // }
+
+        var wallSegments = generateWalls(advTrussData.walls);
         for(var i=0;i<wallSegments.length;i++) {
             scene.add(wallSegments[i]);
         }
+
+        var posts = generatePosts(advTrussData.walls);
         for(var i=0;i<posts.length;i++) {
             scene.add(posts[i]);
         }
-        // renderBase(trussData);
-        // renderTrusses(trussData, trussMeshes);
+
         render();
     </script>
 </body>
